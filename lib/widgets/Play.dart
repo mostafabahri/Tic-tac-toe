@@ -5,81 +5,86 @@ class Play extends StatefulWidget {
   _PlayState createState() => _PlayState();
 }
 
+enum Player { X, O }
+
 class _PlayState extends State<Play> {
-  var blue = Square(color: Colors.blue);
-  var red = Square(color: Colors.red);
-  var green = Square(color: Colors.green);
+  var _squares =
+      List<Player>.generate(9, (i) => i.isEven ? Player.X : Player.O);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: Colors.white),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Text('Tic Tac Toe',
-                  style: Theme.of(context).textTheme.display1),
+            Text('Tic Tac Toe', style: Theme.of(context).textTheme.display1),
+            SizedBox(height: 20),
+            Column(
+              children: List<Widget>.generate(3, (i) => _buildRow(i)),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[green, blue, red],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[blue, red, blue],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[red, blue, green],
-            ),
-            RaisedButton(
-              child: Text('new game'),
-              onPressed: () => print('start new game...'),
-            )
           ],
+        ),
+      ),
+    );
+  }
+
+  Row _buildRow(int rowNum) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List<Widget>.generate(
+        3,
+        (i) => Square(
+          index: rowNum * 3 + i,
+          player: _squares[rowNum * 3 + i],
         ),
       ),
     );
   }
 }
 
-// increment() {
-//   var counter = 0;
-//   return () => ++counter;
-// }
-
-// var inc = increment();
-
 class Square extends StatelessWidget {
-  final double size;
-  final Color color;
+  final int index;
+  final Player player;
 
-  const Square({Key key, this.color = Colors.red, this.size = 100})
-      : super(key: key);
+  const Square({
+    Key key,
+    @required this.player,
+    @required this.index,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('next move'))),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Container(
-            decoration: BoxDecoration(color: Colors.white,
-                // border: Border.all(color: Colors.black, width: 3)
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black38,
-                      blurRadius: 4,
-                      offset: Offset(2, 2))
-                ]),
-            width: size,
-            height: size,
-            child: Text('')),
+    var _decoration = BoxDecoration(color: Colors.white, boxShadow: [
+      BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(2, 2))
+    ]);
+    double _size = 100;
+
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: Container(
+        decoration: _decoration,
+        width: _size,
+        height: _size,
+        child: _buildPlayer(),
       ),
     );
+  }
+
+  Center _buildPlayer() {
+    if (player != null) {
+      return Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            player == Player.X ? 'X ' : 'O',
+            style: TextStyle(fontSize: 35),
+          ),
+          Text('$index')
+        ],
+      ));
+    }
+    return null;
   }
 }
