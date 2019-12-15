@@ -1,46 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:xdrive/widgets/game.dart';
 
 class Play extends StatefulWidget {
   @override
   _PlayState createState() => _PlayState();
-}
-
-enum Player { X, O }
-
-abstract class WinInterface {
-  Player detect();
-}
-
-class Win implements WinInterface {
-  List<Player> squares;
-  var winnerPositions = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-  ];
-
-  Win(this.squares);
-
-  @override
-  Player detect() {
-    for (var position in winnerPositions) {
-      var a = position[0];
-      var b = position[1];
-      var c = position[2];
-      if (squares[a] != null &&
-          squares[a] == squares[b] &&
-          squares[b] == squares[c]) {
-        return squares[a];
-      }
-    }
-    // todo: support draw
-    return null;
-  }
 }
 
 class _PlayState extends State<Play> {
@@ -83,7 +46,6 @@ class _PlayState extends State<Play> {
           return GestureDetector(
             onTap: () => _handleTap(index),
             child: Square(
-              index: index,
               player: _squares[index],
             ),
           );
@@ -104,8 +66,7 @@ class _PlayState extends State<Play> {
   }
 
   void _announceWinner() {
-    WinInterface win = Win(this._squares);
-    _winner = win.detect();
+    _winner = Win(this._squares).detect();
 
     if (_winner != null) {
       _scaffoldKey.currentState.showSnackBar(
@@ -124,13 +85,11 @@ class _PlayState extends State<Play> {
 }
 
 class Square extends StatelessWidget {
-  final int index;
   final Player player;
 
   const Square({
     Key key,
     @required this.player,
-    @required this.index,
   }) : super(key: key);
 
   @override
