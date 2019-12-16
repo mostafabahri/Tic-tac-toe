@@ -9,7 +9,7 @@ class Play extends StatefulWidget {
 class _PlayState extends State<Play> {
   var _squares = List<Player>.generate(9, (i) => null);
   var _xNext = true;
-  var _winner;
+  var _game = GameStatus(status: Status.unfinished);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -55,31 +55,36 @@ class _PlayState extends State<Play> {
   }
 
   _handleTap(int index) {
-    if (_squares[index] != null || _winner != null) {
+    if (_squares[index] != null || _game.status != Status.unfinished) {
       return;
     }
     setState(() {
       _squares[index] = _xNext ? Player.X : Player.O;
       _xNext = !_xNext;
     });
-    _announceWinner();
+    _updateGame();
   }
 
-  void _announceWinner() {
-    _winner = Win(this._squares).detect();
+  void _updateGame() {
+    _game = GameLoop(this._squares).update();
 
-    if (_winner != null) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(content: Text(' $_winner has won!')),
-      );
+    if (_game.status == Status.win) {
+      _displayGameChange(
+          "Player ${_game.winner == Player.X ? 'X' : 'O'} has won!");
+    } else if (_game.status == Status.draw) {
+      _displayGameChange("The game is draw!");
     }
+  }
+
+  void _displayGameChange(message) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 
   _resetGame() {
     setState(() {
       _squares = List<Player>.generate(9, (i) => null);
       _xNext = true;
-      _winner = null;
+      _game = GameStatus(status: Status.unfinished);
     });
   }
 }

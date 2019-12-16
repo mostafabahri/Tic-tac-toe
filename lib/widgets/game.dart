@@ -1,8 +1,18 @@
 enum Player { X, O }
 
-class Win {
+enum Status { unfinished, draw, win }
+
+class GameStatus {
+  final Status status;
+  final Player winner;
+
+  const GameStatus({this.status, this.winner})
+      : assert(winner == null || status == Status.win);
+}
+
+class GameLoop {
   List<Player> squares;
-  var winnerPositions = [
+  static var winnerPositions = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -13,9 +23,9 @@ class Win {
     [2, 4, 6]
   ];
 
-  Win(this.squares);
+  GameLoop(this.squares);
 
-  Player detect() {
+  GameStatus update() {
     for (var position in winnerPositions) {
       var a = position[0];
       var b = position[1];
@@ -23,10 +33,14 @@ class Win {
       if (squares[a] != null &&
           squares[a] == squares[b] &&
           squares[b] == squares[c]) {
-        return squares[a];
+        return GameStatus(status: Status.win, winner: squares[a]);
       }
     }
-    // todo: support draw
-    return null;
+    if (boardFilled()) {
+      return GameStatus(status: Status.draw);
+    }
+    return GameStatus(status: Status.unfinished);
   }
+
+  bool boardFilled() => squares.where((Player x) => x == null).length == 0;
 }
