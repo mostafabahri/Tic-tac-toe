@@ -11,12 +11,9 @@ class _PlayState extends State<Play> {
   var _xNext = true;
   var _game = GameStatus(status: Status.unfinished);
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       body: Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -70,14 +67,34 @@ class _PlayState extends State<Play> {
 
     if (_game.status == Status.win) {
       _displayGameChange(
-          "Player ${_game.winner == Player.X ? 'X' : 'O'} has won!");
+          "Player ${_game.winner == Player.X ? 'X' : 'O'} wins!");
     } else if (_game.status == Status.draw) {
       _displayGameChange("The game is draw!");
     }
   }
 
   void _displayGameChange(message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(message),
+          content: Text("Play again?"),
+          actions: <Widget>[
+            FlatButton(
+                child: Text("Yes"),
+                onPressed: () {
+                  _resetGame();
+                  Navigator.pop(context);
+                }),
+            FlatButton(
+                textColor: Colors.red,
+                child: Text("No"),
+                onPressed: () => Navigator.pop(context))
+          ],
+        );
+      },
+    );
   }
 
   _resetGame() {
