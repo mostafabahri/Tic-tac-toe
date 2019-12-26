@@ -134,17 +134,15 @@ class Square extends StatelessWidget {
 
   Center _buildPlayer() {
     if (player != null) {
-      return Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            player == Player.X ? 'X' : 'O',
-            style: TextStyle(fontSize: 35),
-          ),
-        ],
-      ));
+      return Center(child: _getPlayerImage());
     }
     return null;
+  }
+
+  Image _getPlayerImage() {
+    if (player == Player.X) {
+      return Image.asset('assets/images/cross.jpg', height: 40, width: 40);
+    }
+    return Image.asset('assets/images/circle.jpg', height: 40, width: 40);
   }
 }
