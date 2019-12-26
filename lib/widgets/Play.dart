@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xdrive/widgets/game.dart';
+import 'package:tic_tac_toe/widgets/game.dart';
 
 class Play extends StatefulWidget {
   @override
